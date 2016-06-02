@@ -26,7 +26,7 @@ func get_meaning(word string) string {
 
 	meaning := strings.Join(meanings, ",")
 
-	return meaning
+	return word + "\t" + meaning
 }
 
 func main() {
