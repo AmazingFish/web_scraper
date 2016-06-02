@@ -6,12 +6,15 @@ import (
 	"log"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 )
 
+// get meaning from weblio
 func get_meaning(word string) string {
 	var meanings []string
+	time.Sleep(1000 * time.Millisecond)
 	doc, err := goquery.NewDocument("http://ejje.weblio.jp/content/" + word)
 	if err != nil {
 		log.Fatal(err)
@@ -51,23 +54,18 @@ func main() {
 		defer wfp.Close()
 	}
 
-	// 読み込んだ文字列をレコードごとに格納するスライス
 	var records [][]string
-	var meaning string
 
-	// ファイル読み込み
 	scanner := bufio.NewScanner(rfp)
 	for scanner.Scan() {
 		text := scanner.Text()
-		//	fmt.Println(get_meaning(text))
-		meaning = get_meaning(text)
+		meaning := get_meaning(text)
 		records = append(records, []string{meaning})
 	}
 	if err := scanner.Err(); err != nil {
 		panic(err)
 	}
 
-	// ファイル書き込み
 	w := csv.NewWriter(wfp)
 	for _, record := range records {
 		if err := w.Write(record); err != nil {
@@ -75,7 +73,7 @@ func main() {
 		}
 	}
 
-	// Write any buffered data to the underlying writer.
+	// Write buffered data to the underlying writer.
 	w.Flush()
 
 	if err := w.Error(); err != nil {
