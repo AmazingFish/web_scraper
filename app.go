@@ -44,7 +44,7 @@ func main() {
 	}
 
 	if len(os.Args) < 3 {
-		wfp = os.Stdin
+		wfp = os.Stdout
 	} else {
 		wfp, err = os.OpenFile(os.Args[2], os.O_WRONLY|os.O_CREATE, 0600)
 		if err != nil {
