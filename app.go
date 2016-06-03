@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"encoding/csv"
 	"log"
 	"os"
 	"strings"
@@ -12,7 +11,7 @@ import (
 )
 
 // get meaning from weblio
-func get_meaning(word string) string {
+func get_meaning(word string) []byte {
 	var meanings []string
 	time.Sleep(1000 * time.Millisecond)
 	doc, err := goquery.NewDocument("http://ejje.weblio.jp/content/" + word)
@@ -26,7 +25,7 @@ func get_meaning(word string) string {
 
 	meaning := strings.Join(meanings, ",")
 
-	return word + "\t" + meaning
+	return []byte(word + "\t" + meaning + "\n")
 }
 
 func main() {
@@ -54,29 +53,27 @@ func main() {
 		defer wfp.Close()
 	}
 
-	var records [][]string
+	var records [][]byte
 
 	scanner := bufio.NewScanner(rfp)
 	for scanner.Scan() {
 		text := scanner.Text()
 		meaning := get_meaning(text)
-		records = append(records, []string{meaning})
+		records = append(records, meaning)
 	}
 	if err := scanner.Err(); err != nil {
 		panic(err)
 	}
 
-	w := csv.NewWriter(wfp)
+	w := bufio.NewWriter(wfp)
 	for _, record := range records {
-		if err := w.Write(record); err != nil {
-			log.Fatalln("error writing record to csv:", err)
+		if _, err := w.Write(record); err != nil {
+			log.Fatalln("error writing record to file:", err)
 		}
 	}
 
 	// Write buffered data to the underlying writer.
-	w.Flush()
-
-	if err := w.Error(); err != nil {
+	if err := w.Flush(); err != nil {
 		log.Fatal(err)
 	}
 }
