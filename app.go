@@ -58,6 +58,9 @@ func main() {
 	scanner := bufio.NewScanner(rfp)
 	for scanner.Scan() {
 		text := scanner.Text()
+		if len(text) == 0 {
+			break
+		}
 		meaning := getMeaning(text)
 		records = append(records, meaning)
 	}
