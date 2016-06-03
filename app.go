@@ -11,7 +11,7 @@ import (
 )
 
 // get meaning from weblio
-func get_meaning(word string) []byte {
+func getMeaning(word string) []byte {
 	var meanings []string
 	time.Sleep(1000 * time.Millisecond)
 	doc, err := goquery.NewDocument("http://ejje.weblio.jp/content/" + word)
@@ -58,7 +58,7 @@ func main() {
 	scanner := bufio.NewScanner(rfp)
 	for scanner.Scan() {
 		text := scanner.Text()
-		meaning := get_meaning(text)
+		meaning := getMeaning(text)
 		records = append(records, meaning)
 	}
 	if err := scanner.Err(); err != nil {
